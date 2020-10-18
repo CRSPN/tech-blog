@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { User, Post, Vote } = require("../../models");
+const { User, Post, Comment } = require("../../models");
+const withAuth = require('../../utils/auth');
 
 // GET
 router.get('/', (req, res) => {
@@ -34,17 +35,11 @@ router.get('/:id', (req, res) => {
           attributes: ['title']
         }
       },
-      {
-        model: Post,
-        attributes: ['title'],
-        through: Vote,
-        as: 'voted_posts'
-      }
     ]
   })
     .then(dbUserData => {
       if (!dbUserData) {
-        res.status(404).json({ message: 'No user found with this id' });
+        res.status(404).json({ message: 'No users to be found with this id' });
         return;
       }
       res.json(dbUserData);
@@ -56,15 +51,28 @@ router.get('/:id', (req, res) => {
 });
 
 // POST
-router.post('/', withAuth, (req, res) => {
+router.post('/', (req, res) => {
   User.create({
     username: req.body.username,
     email: req.body.email,
     password: req.body.password
   })
+    .then(dbUserData => {
+      req.session.save(() => {
+        req.session.user_id = dbUserData.id;
+        req.session.username = dbUserData.username;
+        req.session.loggedIn = true;
+
+        res.json(dbUserData);
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
-router.post('/login', withAuth, (req, res) => {
+router.post('/login', (req, res) => {
   User.findOne({
     where: {
       email: req.body.email
@@ -93,7 +101,7 @@ router.post('/login', withAuth, (req, res) => {
   });
 });
 
-router.post('/logout', withAuth, (req, res) => {
+router.post('/logout', (req, res) => {
   if (req.session.loggedIn) {
     req.session.destroy(() => {
       res.status(204).end();
@@ -103,18 +111,17 @@ router.post('/logout', withAuth, (req, res) => {
     res.status(404).end();
   }
 });
-
-// PUT
 router.put('/:id', withAuth, (req, res) => {
   User.update(req.body, {
-    individualHooks: true,
     where: {
       id: req.params.id
     }
   })
     .then(dbUserData => {
       if (!dbUserData[0]) {
-        res.status(404).json({ message: 'No user found with this id' });
+        res.status(404).json({
+          message: 'No user found with this id'
+        });
         return;
       }
       res.json(dbUserData);
@@ -124,7 +131,6 @@ router.put('/:id', withAuth, (req, res) => {
       res.status(500).json(err);
     });
 });
-
 // DELETE /api/users
 router.delete('/:id', withAuth, (req, res) => {
   User.destroy({
