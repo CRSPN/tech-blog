@@ -1,0 +1,35 @@
+{
+  "name": "tech-blog",
+  "version": "1.0.0",
+  "description": "tech-blog",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "connect-session-sequelize": "^7.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "express-session": "^1.17.1",
+    "handlebars": "^4.7.6",
+    "mysql2": "^2.1.0",
+    "react": "^16.14.0",
+    "sequelize": "^6.3.4"
+  },
+  "devDependencies": {
+    "jest": "^26.5.3"
+  },
+  "scripts": {
+    "test": "jest"
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CRSPN/tech-blog.git"
+  },
+  "author": "CRSPN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CRSPN/tech-blog/issues"
+  },
+  "homepage": "https://github.com/CRSPN/tech-blog#readme"
+}
