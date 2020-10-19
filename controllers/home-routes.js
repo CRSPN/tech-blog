@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const sequelize = require('../config/connection');
 const { Post, User, Comment } = require('../models');
 
 // const posts = dbPostData.map(post => post.get({ plain: true }));
@@ -28,9 +27,13 @@ router.get('/', (req, res) => {
     ]
   })
     .then(dbPostData => {
+      const posts = dbPostData.map(post => post.get({ plain: true }));
       res.render('homepage', {
         posts,
         loggedIn: req.session.loggedIn
+      });
+      router.get('/login', (req, res) => {
+        res.render('login');
       });
     })
     .catch(err => {
@@ -47,7 +50,14 @@ router.get('/login', (req, res) => {
 
   res.render('login');
 });
-
+router.get('/signup', (req, res) => {
+  if(req.session.loggedIn) {
+      res.redirect('/');
+      return;
+  }
+  
+  res.render('sign-up');
+});
 router.get('/post/:id', (req, res) => {
   Post.findOne({
     where: {
@@ -80,7 +90,7 @@ router.get('/post/:id', (req, res) => {
         return;
       }
 
-      // serialize the data
+     
       const post = dbPostData.get({ plain: true });
 
       // pass data to template

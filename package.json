@@ -15,10 +15,12 @@
     "react": "^16.14.0",
     "sequelize": "^6.3.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^26.5.3"
+  },
   "scripts": {
-    "test": "test",
-    "start": "node server.js"
+    "test": "jest"
+    
   },
   "repository": {
     "type": "git",
